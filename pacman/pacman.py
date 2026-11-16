@@ -21,6 +21,8 @@ class Pacman(Agent):
         """ Sets the direction the pacman should head in """
         if self.mode == Mode.RANDOM:   
             self.direction = self.select_random_heading()
+        elif self.mode == Mode.Agent:
+            self.direction = self.find_next_heading()
             
         #elif self.mode == ...
         
@@ -30,6 +32,8 @@ class Pacman(Agent):
         #    (1) if there is no plan, create a plan.
         #    (2) self.direction = the next step in the plan 
         #----    
+    def Agent(self):
+        self.get_direction
     
     
     def eat(self):
