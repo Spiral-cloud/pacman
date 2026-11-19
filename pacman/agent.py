@@ -12,7 +12,7 @@ class Agent(ABC):
     def __init__(self, world, pose, direction):
         self.world = world
         self.pose = pose
-        
+        self.plan = []
         self.direction = direction
         
         self.visible = True # Pacmen become invisble when they die. Ghost become invisible after eating a Pacman. 

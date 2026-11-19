@@ -5,7 +5,8 @@ Contains the Pacman class
 
 from config import Mode, MAX_LIVES
 from agent import Agent
-
+from pose import Pose
+from collections import deque
 
 class Pacman(Agent):
     """ Class to represent the Pacman agent """
@@ -22,7 +23,12 @@ class Pacman(Agent):
         if self.mode == Mode.RANDOM:   
             self.direction = self.select_random_heading()
         elif self.mode == Mode.Agent:
-            self.direction = self.find_next_heading()
+            if not self.plan:
+                self.plan = self.Agent()
+            if self.plan:
+                self.direction = self.plan.pop(0)
+            else:
+                self.direction = self.select_random_heading()
             
         #elif self.mode == ...
         
@@ -33,7 +39,48 @@ class Pacman(Agent):
         #    (2) self.direction = the next step in the plan 
         #----    
     def Agent(self):
-        self.get_direction
+        start = (self.pose.x, self.pose.y)
+        pellets = self.world.get_pellets
+        for pellet in pellets():
+            pellet_location = {(pellet.x, pellet.y) for pellet in self.world.get_pellets()}
+        frontier = deque([start])
+        visited = {start}
+        previous = {start: None}
+        while frontier:
+            current = frontier.popleft()
+            if current in  pellet_location:
+                return self.direction_plan(
+                    start,
+                    current,
+                    previous
+                )
+            x, y = current
+            current_pose = Pose(x,y)
+            for direction in self.world.get_actions(current_pose):
+                next = self.world.get_successor_state(current_pose, direction)
+                
+                '''next = self.world.get_successor_state
+                (
+                    current_pose,
+                    direction
+                )'''
+                next_location = (next.x, next.y)
+                if next_location not in visited:
+                    visited.add(next_location)
+                    previous[next_location] = (current, direction)
+                    frontier.append(next_location)
+        return[]
+    def direction_plan(self, start, goal, previous):
+        plan = []
+        current = goal
+        while current != start:
+            parent, direction = previous[current]
+            plan.append(direction)
+            current = parent
+        plan.reverse
+        return plan
+
+            
     
     
     def eat(self):
