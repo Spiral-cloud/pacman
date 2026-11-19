@@ -37,7 +37,7 @@ class Agent(ABC):
         """ moves the agent forwards by one grid square 
             If the grid location contains a wall, the agent stays still.
         """   
-        self.pose = self.world.get_successor_state(self.pose, self.direction, self.visible)     
+        self.pose = self.world.get_successor_state(self.pose, self.direction, not self.visible)     
  
     #--------
     # Getters and setters
