@@ -8,6 +8,7 @@ from agent import Agent
 from pose import Pose
 from collections import deque
 from heapq import heappush,heappop
+from itertools import count
 
 class Pacman(Agent):
     """ Class to represent the Pacman agent """
@@ -31,7 +32,15 @@ class Pacman(Agent):
             else:
                 self.direction = self.select_random_heading()
         elif self.mode == Mode.DEPTH:
-            self.plan = self.depth_first_search()
+            if not self.plan:
+                self.plan = self.depth_first_search()
+            if self.plan:
+                self.direction = self.plan.pop(0)
+            else:
+                self.direction = self.select_random_heading()
+        elif self.mode == Mode.A:
+            if not self.plan:
+                self.plan = self.A_star_search()
             if self.plan:
                 self.direction = self.plan.pop(0)
             else:
@@ -101,18 +110,18 @@ class Pacman(Agent):
                 current = stack.pop()
                 if current in pellet_location:
                     return self.direction_plan(start, current,previous)
-            x,y = current
-            current_pose = Pose(x,y)
-            for direction in self.world.get_actions(current_pose):
-                successor = self.world.get_successor_state
-                (
-                    current_pose, direction
-                )
-                next_location = (successor.x, successor.y)
-                if next_location not in visited:
-                    visited.add(next_location)
-                    previous[next_location] = (current, direction)
-                    stack.append(next_location)
+                x, y = current
+                current_pose = Pose(x,y)
+                for direction in self.world.get_actions(current_pose):
+                    successor = self.world.get_successor_state(
+                        current_pose, 
+                        direction
+                    )
+                    next_location = (successor.x, successor.y)
+                    if next_location not in visited:
+                        visited.add(next_location)
+                        previous[next_location] = (current, direction)
+                        stack.append(next_location)
          return []
     def A_star_search(self):
         start = (self.pose.x, self.pose.y)
@@ -121,6 +130,32 @@ class Pacman(Agent):
             pellet_location = {(pellet.x, pellet.y) for pellet in self.world.get_pellets()}
         if not pellet_location:
             return[]
+        #Helper function to calculate manhattan distance
+        def heuristic(location):
+            x, y = location
+            return min(abs(x-pellet_x) + abs (y - pellet_y)
+            for pellet_x , pellet_y in pellet_location
+            )
+        sequence = count()
+        frontier = [(heuristic(start), next(sequence), start)]
+        cost = {start:0}
+        previous = {start:None}
+        while frontier:
+            _, _, current = heappop(frontier)
+            if current in pellet_location:
+                return self.direction_plan(start, current, previous)
+            x, y = current
+            current_pose = Pose(x,y)
+            for direction in self.world.get_actions(current_pose):
+                successor = self.world.get_successor_state(current_pose, direction)
+                next_location = (successor.x, successor.y)
+                new_cost = cost[current] + 1
+                if(next_location not in cost or new_cost < cost[next_location]):
+                    cost[next_location] = new_cost
+                    previous[next_location]= (current, direction)
+                    priority = new_cost + heuristic(next_location)
+                    heappush(frontier,(priority,next(sequence), next_location))
+        return[]
 
             
     
