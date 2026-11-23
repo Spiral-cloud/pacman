@@ -7,6 +7,7 @@ from enum import Enum
 class Mode(Enum):
     RANDOM = 0,
     Agent = 1
+    DEPTH = 2
      # Add more options here
 
 LOOP_DELAY = 500 # reduce this to speed-up the game. (Is in milliseconds)
@@ -14,7 +15,7 @@ LOOP_DELAY = 500 # reduce this to speed-up the game. (Is in milliseconds)
 # The code we have provided, creates two pacmen. Both of them select RANDOM headings.
 # The length of the PACMEN_MODES array determines how many pacmen are created (and the content controls what mode the pacmen are in).
 # You will want to change this when evaluating your approaches.
-PACMEN_MODES = [Mode.RANDOM, Mode.Agent] 
+PACMEN_MODES = [Mode.Agent, Mode.DEPTH] 
 
 MAX_LIVES = 3
 
